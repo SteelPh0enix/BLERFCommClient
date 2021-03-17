@@ -1,5 +1,7 @@
 #include "blerfcomm.hpp"
 
+#include <algorithm>
+
 BLERFComm::BLERFComm(QObject *parent) : QObject(parent) {
   m_comm = new BLEComm{this};
 
@@ -44,7 +46,12 @@ void BLERFComm::connectToDevice(QBluetoothDeviceInfo const& device) {
 
 void BLERFComm::disconnectFromDevice() { m_comm->disconnectFromDevice(); }
 
-void BLERFComm::sendData(QByteArray const& data) { m_comm->transmitData(data); }
+void BLERFComm::sendData(QByteArray const& data) {
+  QByteArray properData{data.size() + 1, 0x00};
+  properData[0] = data.size();
+  std::copy(data.begin(), data.end(), properData.begin() + 1);
+  m_comm->transmitData(properData);
+}
 
 void BLERFComm::setServiceUuid(QBluetoothUuid const& serviceUuid) {
   m_comm->setCommServiceUuid(serviceUuid);
