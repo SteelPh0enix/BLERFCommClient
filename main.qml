@@ -40,6 +40,11 @@ ApplicationWindow {
                 return;
             }
 
+            if (message.length > 254) {
+                logError("Message is too long!");
+                return;
+            }
+
             logColor("ᐅ %1".arg(message), "#91d184");
             uiController.sendMessageToDevice(message);
         }
@@ -207,6 +212,7 @@ ApplicationWindow {
             validator: RegularExpressionValidator {
                 regularExpression: /[\x00-\xff]+/
             }
+            maximumLength: 254
 
             onAccepted: {
                 sendMessage(text);
